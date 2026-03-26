@@ -15,11 +15,6 @@ export const filterTractors = (params) => {
   return api.get("/tractors/filter", { params });
 };
 
-// ADMIN
-export const createTractor = (data) => {
-  return api.post("/tractors", data);
-};
-
 export const updateTractor = (id, data) => {
   return api.put(`/tractors/${id}`, data);
 };
@@ -28,9 +23,19 @@ export const deleteTractor = (id) => {
   return api.delete(`/tractors/${id}`);
 };
 
-// IMAGE UPLOAD
-export const uploadTractorImage = (id, formData) => {
+
+export const addTractor = (data) => {
+  return api.post("/tractors", data);
+};
+
+export const uploadTractorImage = (id, file, type) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("type", type);
+
   return api.post(`/tractors/${id}/images`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+    params: {
+      tractorId: id, // 🔥 THIS FIX
+    },
   });
 };

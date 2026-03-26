@@ -8,11 +8,26 @@ export const getArticleBySlug = (slug) => {
   return api.get(`/articles/${slug}`);
 };
 
-export const createArticle = (data) => {
-  return api.post("/articles", data);
+export const createArticle = (title, content, mainImage) => {
+  const formData = new FormData();
+
+  formData.append("mainImage", mainImage);
+
+  return api.post("/articles", formData, {
+    params: {
+      title,
+      content,
+    },
+  });
 };
 
-export const uploadArticleImage = (id, formData) => {
+export const uploadArticleImages = (id, images) => {
+  const formData = new FormData();
+
+  images.forEach((img) => {
+    formData.append("images", img);
+  });
+
   return api.post(`/articles/${id}/images`, formData);
 };
 
