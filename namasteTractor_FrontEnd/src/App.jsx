@@ -1,43 +1,55 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
 
-import Home from "./pages/Home";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
+import Navbar from "./context/components/Navbar";
+import Home from "./pages/Home";
+import Footer from "./context/components/Footer";
 import Register from "./pages/Register";
-import TractorList from "./pages/TractorList";
-import ArticleList from "./pages/ArticleList";
-import TractorDetail from "./pages/TractorDetail";
-import ArticleDetail from "./pages/ArticleDetail";
-import Footer from "./components/Footer";
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminRoute from "./routes/AdminRoute";
-import CreateArticle from "./components/admin/CreateArticle";
 
+
+// Protected route wrapper (same as before)
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="text-center py-10">Loading...</div>;
+  return user ? children : <Navigate to="/login" />;
+};
+
+// Optional: Admin route wrapper (if needed)
+const AdminRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div className="text-center py-10">Loading...</div>;
+  return user && user.role === "ADMIN" ? children : <Navigate to="/" />;
+};
+
+function AppRoutes() {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Home />} />
+          {/* Example admin route – you can add later */}
+          <Route path="/admin" element={
+            <AdminRoute>
+              <div className="p-8">Admin Panel – coming soon</div>
+            </AdminRoute>
+          } />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+}
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/tractors" element={<TractorList />} />
-        <Route path="/articles" element={<ArticleList />} />
-        <Route path="/tractors/:id" element={<TractorDetail />} />
-        <Route path="/articles/:slug" element={<ArticleDetail />} />
-        <Route path="/create-article" element={<CreateArticle />} />
-        <Route
-           path="/admin"
-           element={
-                    <AdminRoute>
-                      <AdminDashboard />
-                    </AdminRoute>
-                   }
-        />
-      </Routes>
-      <Footer/>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
