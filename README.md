@@ -8,7 +8,6 @@ Namaste Tractor Frontend is a React-based web application that provides a user i
 ## 🛠️ Tech Stack
 - React  
 - JavaScript  
-- TypeScript  
 - HTML  
 - CSS  
 - Axios (API Integration)  
